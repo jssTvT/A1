@@ -20,15 +20,11 @@
       <a href="#">站规</a>
     </nav>
     
-    <!-- 👇 时间线选择器 👇 -->
     <div class="timeline-selector">
       <span>时间线：</span>
       <select onchange="if(this.value) window.location.href=this.value;">
-        <!-- 默认选中当前（最新），也就是本页面 -->
         <option value="index.html" selected>当前（最新）</option>
-        <!-- 下面加入你过去的备份页面 -->
-        <option value="chapter_oct.html">十月：旧教学楼</option>
-        <option value="chapter_nov.html">十一月：见字如面</option>
+        <!-- 未来你可以加在这里：<option value="chapter_oct.html">十月：旧教学楼</option> -->
       </select>
     </div>
 
@@ -43,6 +39,7 @@
 <main class="layout">
   <div class="main-col">
     
+    <!-- 1. 列表视图 -->
     <div id="view-list">
       <div class="identity-bar">
         <div style="display: flex; align-items: center; gap: 12px;">
@@ -62,6 +59,7 @@
       </section>
     </div>
 
+    <!-- 2. 帖子详情视图 -->
     <div id="view-detail" class="hidden">
       <button class="btn-back" onclick="backTo('list')">← 返回帖子列表</button>
       <article class="post-detail">
@@ -75,6 +73,7 @@
       </article>
     </div>
 
+    <!-- 3. 个人主页视图 -->
     <div id="view-profile" class="hidden">
       <button class="btn-back" onclick="backTo('list')">← 返回帖子列表</button>
       <div class="profile-alert">🔒 你还不是她的好友，她只公开了一部分信息！</div>
@@ -98,11 +97,10 @@
 <footer class="footer">本站为小说虚构场景展示，非真实学校网站。</footer>
 
 <script src="main.js"></script>
+
 <script>
-  // 👇 这里是你所有的帖子数据 👇
-  // 无论新帖旧帖，只要没被删除，全部堆在这里！
+  // 👇 数据区：在这里贴你未来生成的新帖子 👇
   const allPostsData = [
-    // --- 10月的帖子 ---
     {
       id: 1,
       board: '校园公告',
@@ -123,18 +121,18 @@
       time: '10月24日 22:13',
       visibility: 'public',
       content: '今晚十点半经过旧教学楼，四楼最右边那间教室的灯还亮着。',
-      replies: []
+      replies: [
+        { author: '匿名', time: '22:20', text: '那里不是早就封了吗？' }
+      ]
     },
-    
-    // --- 11月的新帖子（你用生成器做出来的直接粘在这下面） ---
     {
       id: 3,
-      board: '校园公告',
-      title: '【社联】“见字如面”冬日跨校信件交换活动正式开启！',
-      author: '学生会',
-      time: '11月10日 12:00',
-      visibility: 'public',
-      content: '在这个连聊天记录都可以一键清空的年代，你有多久没收到过一封手写的信了？',
+      board: '树洞',
+      title: '【仅好友可见】昨晚其实我去过旧教学楼',
+      author: '林照',
+      time: '10月24日 23:30',
+      visibility: 'friends',
+      content: '这个帖子在首页看不到，只有在林照的主页才能看到上锁状态。',
       replies: []
     }
   ];
