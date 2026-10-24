@@ -138,7 +138,7 @@ function openProfile(authorName, e) {
   const userPosts = globalForumData.filter(p => p.author === authorName);
   
   if (userPosts.length === 0) {
-    profileList.innerHTML = '<div class="muted">她还没有发过帖子。</div>';
+    profileList.innerHTML = '<div class="muted">TA还没有发过帖子。</div>';
   } else {
     userPosts.forEach(post => {
       const isPublic = post.visibility === 'public';
