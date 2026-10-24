@@ -1,1 +1,217 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>发帖生成器 · 冬蝉校园网</title>
+  <style>
+    :root { --bg: #f5f1e8; --panel: #fffdf8; --text: #2d2a25; --muted: #7b7469; --line: #ddd3c4; --accent: #6b1f2a; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: "Microsoft YaHei", sans-serif; line-height: 1.6; }
+    .container { max-width: 800px; margin: 40px auto; padding: 20px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.05); }
+    h1 { text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; }
+    input[type="text"], select, textarea {
+      width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 6px;
+      box-sizing: border-box; font-family: inherit; background: #fff;
+    }
+    textarea { resize: vertical; min-height: 100px; }
+    .row { display: flex; gap: 15px; }
+    .row > .form-group { flex: 1; }
+    .btn {
+      display: inline-block; background: var(--accent); color: #fff; border: none;
+      padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+    
+    .reply-item-form { border: 1px dashed var(--line); padding: 10px; margin-bottom: 10px; border-radius: 6px; position: relative; background: #faf8f5;}
+    .btn-remove { position: absolute; right: 10px; top: 10px; background: #ff4d4f; color: #fff; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;}
 
+    #result-area { margin-top: 30px; display: none; }
+    pre { background: #2d2a25; color: #f5f1e8; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: Consolas, monospace; }
+    .copy-tip { color: #07c160; font-weight: bold; margin-left: 10px; display: none; }
+    .hint { font-size: 12px; color: #888; margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>📝 校园网发帖生成器</h1>
+  <p style="text-align:center; color:#7b7469; font-size: 14px; margin-bottom: 20px;">填完后点击“生成代码”，复制到 index.html 的数据区即可。</p>
+
+  <div class="row">
+    <div class="form-group">
+      <label>所属分区</label>
+      <select id="gen-board">
+        <option value="校园公告">校园公告</option>
+        <option value="树洞" selected>树洞</option>
+        <option value="学习资料">学习资料</option>
+        <option value="创作区">创作区</option>
+        <option value="失物招领">失物招领</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>标签 (选填)</label>
+      <input type="text" id="gen-tag" placeholder="例如：热、置顶">
+    </div>
+  </div>
+
+  <div class="row" id="author-row">
+    <div class="form-group">
+      <label>发帖人身份</label>
+      <select id="gen-author-type" onchange="toggleAuthorInput()">
+        <option value="anonymous">匿名 (默认公开)</option>
+        <option value="real">实名</option>
+      </select>
+    </div>
+    
+    <div class="form-group" id="real-name-group" style="display: none;">
+      <label>实名 ID</label>
+      <input type="text" id="gen-author-name" placeholder="输入实名ID（如：林照）">
+      <div class="hint">⚠️ 必须与之前的名字完全一致，才会自动聚合到同一主页！</div>
+    </div>
+    
+    <div class="form-group" id="visibility-group" style="display: none;">
+      <label>是否仅好友可见？</label>
+      <select id="gen-visibility">
+        <option value="public" selected>公开 (首页可见)</option>
+        <option value="friends">仅好友可见 (主页上锁)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>帖子标题</label>
+    <input type="text" id="gen-title" placeholder="输入帖子标题...">
+  </div>
+
+  <div class="form-group">
+    <label>发帖时间</label>
+    <input type="text" id="gen-time" value="10月25日 12:00">
+  </div>
+
+  <div class="form-group">
+    <label>正文内容 (支持换行)</label>
+    <textarea id="gen-content" placeholder="输入正文内容..."></textarea>
+  </div>
+
+  <hr style="border: 0; border-top: 1px solid var(--line); margin: 20px 0;">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3>评论区 (选填)</h3>
+    <button class="btn btn-outline" onclick="addReplyForm()" style="margin-top:0; padding: 5px 12px; font-size: 14px;">+ 添加一条评论</button>
+  </div>
+  <div id="replies-container" style="margin-top: 15px;"></div>
+
+  <div style="text-align: center; margin-top: 30px;">
+    <button class="btn" onclick="generateCode()">✨ 生成代码</button>
+    <a href="index.html" style="margin-left: 15px; color: var(--muted); text-decoration: none;">返回论坛</a>
+  </div>
+
+  <div id="result-area">
+    <h3>👇 复制下面的代码，粘贴到 index.html 里</h3>
+    <button class="btn" onclick="copyCode()" style="padding: 6px 12px; font-size: 14px; margin-bottom: 10px;">📋 复制代码</button>
+    <span class="copy-tip" id="copy-tip">已复制到剪贴板！</span>
+    <pre><code id="output-code"></code></pre>
+  </div>
+</div>
+
+<script>
+  window.onload = () => { toggleAuthorInput(); };
+
+  function toggleAuthorInput() {
+    const type = document.getElementById('gen-author-type').value;
+    const isReal = type === 'real';
+    document.getElementById('real-name-group').style.display = isReal ? 'block' : 'none';
+    document.getElementById('visibility-group').style.display = isReal ? 'block' : 'none';
+  }
+
+  function addReplyForm() {
+    const container = document.getElementById('replies-container');
+    const div = document.createElement('div');
+    div.className = 'reply-item-form';
+    div.innerHTML = `
+      <button class="btn-remove" onclick="this.parentElement.remove()">删除</button>
+      <div class="row">
+        <div class="form-group" style="flex: 0.4;">
+          <label>评论人</label>
+          <input type="text" class="reply-author" placeholder="匿名或实名">
+        </div>
+        <div class="form-group" style="flex: 0.6;">
+          <label>时间</label>
+          <input type="text" class="reply-time" value="12:05">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>评论内容</label>
+        <input type="text" class="reply-text" placeholder="输入回复内容...">
+      </div>
+    `;
+    container.appendChild(div);
+  }
+
+  function generateCode() {
+    const board = document.getElementById('gen-board').value;
+    const tag = document.getElementById('gen-tag').value.trim();
+    const authorType = document.getElementById('gen-author-type').value;
+    const isReal = authorType === 'real';
+    const author = isReal ? (document.getElementById('gen-author-name').value.trim() || '未命名') : '匿名';
+    const visibility = isReal ? document.getElementById('gen-visibility').value : 'public';
+    const title = document.getElementById('gen-title').value.trim();
+    const time = document.getElementById('gen-time').value.trim();
+    const contentRaw = document.getElementById('gen-content').value.trim();
+    
+    if (!title || !contentRaw) {
+      alert('标题和正文不能为空！');
+      return;
+    }
+
+    const content = contentRaw.replace(/\n/g, '<br>');
+
+    const replies = [];
+    const replyForms = document.querySelectorAll('.reply-item-form');
+    replyForms.forEach(form => {
+      const rAuthor = form.querySelector('.reply-author').value.trim() || '匿名';
+      const rTime = form.querySelector('.reply-time').value.trim();
+      const rText = form.querySelector('.reply-text').value.trim();
+      if (rText) {
+        replies.push({ author: rAuthor, time: rTime, text: rText });
+      }
+    });
+
+    const postObj = {
+      id: Date.now(),
+      board: board,
+      title: title,
+      author: author,
+      time: time,
+      visibility: visibility,
+      content: content,
+      replies: replies
+    };
+
+    if (tag) {
+      postObj.tag = tag;
+      if (tag === '热') postObj.tagClass = 'hot';
+      else if (tag === '置顶') postObj.tagClass = 'top';
+    }
+
+    const codeString = JSON.stringify(postObj, null, 2);
+    
+    document.getElementById('output-code').innerText = codeString;
+    document.getElementById('result-area').style.display = 'block';
+    document.getElementById('output-code').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function copyCode() {
+    const code = document.getElementById('output-code').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      const tip = document.getElementById('copy-tip');
+      tip.style.display = 'inline';
+      setTimeout(() => { tip.style.display = 'none'; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
