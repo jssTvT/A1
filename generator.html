@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>发帖生成器 · 冬蝉校园网</title>
+  <title>发帖生成器 · A1校园网</title>
   <style>
     :root { --bg: #f5f1e8; --panel: #fffdf8; --text: #2d2a25; --muted: #7b7469; --line: #ddd3c4; --accent: #6b1f2a; }
     body { margin: 0; background: var(--bg); color: var(--text); font-family: "Microsoft YaHei", sans-serif; line-height: 1.6; }
@@ -62,14 +62,14 @@
     <div class="form-group">
       <label>发帖人身份</label>
       <select id="gen-author-type" onchange="toggleAuthorInput()">
-        <option value="anonymous">匿名 (默认公开)</option>
+        <option value="anonymous">匿名</option>
         <option value="real">实名</option>
       </select>
     </div>
     
     <div class="form-group" id="real-name-group" style="display: none;">
       <label>实名 ID</label>
-      <input type="text" id="gen-author-name" placeholder="输入实名ID（如：林照）">
+      <input type="text" id="gen-author-name" placeholder="输入ID（如：关关）">
       <div class="hint">⚠️ 必须与之前的名字完全一致，才会自动聚合到同一主页！</div>
     </div>
     
