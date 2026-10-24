@@ -1,16 +1,22 @@
-
 let currentBoard = '全部';
 let currentProfileName = '';
 let globalForumData = []; 
 
-// 初始化论坛，接收 index.html 里的数据
+// 初始化论坛
 function initForum(data) {
   globalForumData = data;
   renderBoardNav();
   renderPostList();
+  
+  // 👇 新增：监听搜索框的输入事件 👇
+  const searchInput = document.getElementById('post-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      renderPostList(); // 每次输入字符，就重新渲染一次列表
+    });
+  }
 }
 
-// 顶部消息提示
 function showToast(msg) {
   const toast = document.getElementById('toast');
   if (!toast) return;
@@ -19,7 +25,6 @@ function showToast(msg) {
   setTimeout(() => { toast.classList.remove('show'); }, 2500);
 }
 
-// 切换日夜模式
 function toggleTheme() {
   const root = document.documentElement;
   const isDark = root.dataset.theme === 'dark';
@@ -32,7 +37,6 @@ function toggleTheme() {
   }
 }
 
-// 视图切换（列表、详情、主页）
 function switchView(viewId) {
   ['view-list', 'view-detail', 'view-profile'].forEach(id => {
     document.getElementById(id).classList.add('hidden');
@@ -41,7 +45,6 @@ function switchView(viewId) {
   window.scrollTo(0, 0);
 }
 
-// 返回逻辑
 function backTo(targetView) {
   if (targetView === 'list') {
     switchView('view-list');
@@ -50,11 +53,11 @@ function backTo(targetView) {
   }
 }
 
-// 渲染顶部分区
 function renderBoardNav() {
   const nav = document.getElementById('board-nav');
   if (!nav) return; 
   nav.innerHTML = '';
+  // 这里已经加上了你新要求的“吹水”
   const boards = ['全部', '校园公告', '树洞', '吹水', '学习资料', '创作区', '失物招领'];
   
   boards.forEach(board => {
@@ -70,18 +73,30 @@ function renderBoardNav() {
   });
 }
 
-// 渲染帖子列表（只渲染公开帖子）
 function renderPostList() {
   const list = document.getElementById('post-list');
   if (!list) return; 
   list.innerHTML = '';
   
-  const filtered = globalForumData.filter(p => 
-    (currentBoard === '全部' || p.board === currentBoard) && p.visibility === 'public'
-  );
+  // 👇 新增：获取搜索框的关键字并转成小写 👇
+  const searchInput = document.getElementById('post-search');
+  const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+  // 过滤逻辑：匹配分区 + 必须是公开帖子 + 匹配关键字
+  const filtered = globalForumData.filter(p => {
+    const matchBoard = (currentBoard === '全部' || p.board === currentBoard);
+    const matchVisibility = p.visibility === 'public';
+    
+    // 匹配标题或正文
+    const matchKeyword = keyword === '' || 
+                         p.title.toLowerCase().includes(keyword) || 
+                         p.content.toLowerCase().includes(keyword);
+                         
+    return matchBoard && matchVisibility && matchKeyword;
+  });
   
   if (filtered.length === 0) {
-    list.innerHTML = '<div class="muted" style="text-align:center; padding:20px;">暂无帖子</div>';
+    list.innerHTML = '<div class="muted" style="text-align:center; padding:20px;">没有找到相关帖子</div>';
     return;
   }
 
@@ -110,7 +125,6 @@ function renderPostList() {
   });
 }
 
-// 打开个人主页
 function openProfile(authorName, e) {
   if (e) e.stopPropagation();
   if (authorName === '匿名') return;
@@ -163,7 +177,6 @@ function openProfile(authorName, e) {
   switchView('view-profile');
 }
 
-// 打开帖子详情
 function openDetail(id, fromWhere = 'list') {
   const post = globalForumData.find(p => p.id === id);
   if (!post) return;
