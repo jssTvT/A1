@@ -200,11 +200,7 @@ function openDetail(id, fromWhere = 'list') {
     <span class="badge" style="margin-left:auto;">${post.board}</span>
   `;
   
-  document.getElementById('detail-content').innerHTML = post.content;
-  document.getElementById('detail-reply-title').innerText = `全部回复 (${post.replies.length})`;
-  
-  const repliesContainer = document.getElementById('detail-replies');
-  repliesContainer.innerHTML = '';
+
   
   if (post.replies.length === 0) {
     repliesContainer.innerHTML = '<div class="muted" style="font-size:14px;">暂无回复</div>';
