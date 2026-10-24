@@ -55,7 +55,7 @@ function renderBoardNav() {
   const nav = document.getElementById('board-nav');
   if (!nav) return; 
   nav.innerHTML = '';
-  const boards = ['全部', '校园公告', '树洞', '学习资料', '创作区', '失物招领'];
+  const boards = ['全部', '校园公告', '树洞', '吹水', '学习资料', '创作区', '失物招领'];
   
   boards.forEach(board => {
     const btn = document.createElement('button');
