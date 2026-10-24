@@ -124,3 +124,29 @@ button { font: inherit; cursor: pointer; }
   .layout { grid-template-columns: 1fr; }
   .sidebar { display: none; }
 }
+/* ================= 删帖预警样式 ================= */
+.deleted-banner {
+  background: #fff1f0;
+  color: #cf1322;
+  border-left: 4px solid #ff4d4f;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 4px;
+}
+:root[data-theme="dark"] .deleted-banner {
+  background: #2a1215;
+  color: #ff7875;
+  border-left-color: #ff4d4f;
+}
+
+.content-muted {
+  opacity: 0.6;
+  filter: grayscale(50%);
+}
+
+.tag-deleted {
+  background-color: #ff4d4f !important;
+  color: #fff !important;
+}
