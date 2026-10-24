@@ -1,1 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>冬蝉校园网 · 论坛（最新）</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <strong>冬蝉校园网</strong>
+      <small>仲冬女校 · 仅校内可见</small>
+    </a>
+    <nav class="nav">
+      <a href="#">论坛</a>
+      <a href="#">私信</a>
+      <a href="#">站规</a>
+    </nav>
+    
+    <!-- 👇 时间线选择器 👇 -->
+    <div class="timeline-selector">
+      <span>时间线：</span>
+      <select onchange="if(this.value) window.location.href=this.value;">
+        <!-- 默认选中当前（最新），也就是本页面 -->
+        <option value="index.html" selected>当前（最新）</option>
+        <!-- 下面加入你过去的备份页面 -->
+        <option value="chapter_oct.html">十月：旧教学楼</option>
+        <option value="chapter_nov.html">十一月：见字如面</option>
+      </select>
+    </div>
+
+    <button class="theme-btn" type="button" onclick="toggleTheme()" id="themeBtn">夜间模式</button>
+  </div>
+</header>
+
+<div class="notice-bar">
+  <strong>公告：</strong>校园网将于本周五 23:00 进行维护。请勿在树洞发布真实姓名、宿舍号与联系方式。
+</div>
+
+<main class="layout">
+  <div class="main-col">
+    
+    <div id="view-list">
+      <div class="identity-bar">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          当前身份：<span class="badge">匿名访客</span>
+          <button class="btn-new-post" onclick="window.location.href='generator.html'">✏️ 发帖</button>
+        </div>
+        <label class="search">
+          搜索帖子
+          <input id="post-search" type="search" placeholder="输入关键字...">
+        </label>
+      </div>
+
+      <div class="board-nav" id="board-nav"></div>
+
+      <section>
+        <div class="post-list" id="post-list"></div>
+      </section>
+    </div>
+
+    <div id="view-detail" class="hidden">
+      <button class="btn-back" onclick="backTo('list')">← 返回帖子列表</button>
+      <article class="post-detail">
+        <h1 id="detail-title"></h1>
+        <div class="meta detail-meta" id="detail-meta"></div>
+        <div class="post-body" id="detail-content"></div>
+        <div class="reply-list">
+          <h2 id="detail-reply-title">全部回复</h2>
+          <div id="detail-replies"></div>
+        </div>
+      </article>
+    </div>
+
+    <div id="view-profile" class="hidden">
+      <button class="btn-back" onclick="backTo('list')">← 返回帖子列表</button>
+      <div class="profile-alert">🔒 你还不是她的好友，她只公开了一部分信息！</div>
+      <article class="post-detail" style="padding-top: 10px;">
+        <h1 id="profile-name" style="margin-bottom: 20px;"></h1>
+        <h2 style="font-size: 16px; border-left: 3px solid var(--accent); padding-left: 8px;">Ta 的帖子</h2>
+        <div class="post-list" id="profile-post-list" style="margin-top: 16px;"></div>
+      </article>
+    </div>
+
+  </div>
+
+  <aside class="sidebar">
+    <section class="widget">
+      <h3>版规摘要</h3>
+      <p>禁止人肉、禁止公开真实姓名与宿舍号、禁止造谣。树洞匿名不等于无痕，违规内容将按站规处理。</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="footer">本站为小说虚构场景展示，非真实学校网站。</footer>
+
+<script src="main.js"></script>
+<script>
+  // 👇 这里是你所有的帖子数据 👇
+  // 无论新帖旧帖，只要没被删除，全部堆在这里！
+  const allPostsData = [
+    // --- 10月的帖子 ---
+    {
+      id: 1,
+      board: '校园公告',
+      title: '【纪检部】关于十月中旬开展秋季仪容仪表检查的通知',
+      author: '学生会',
+      time: '10月12日 08:00',
+      tag: '置顶',
+      tagClass: 'top',
+      visibility: 'public',
+      content: '大家注意啦，秋季校服可以正式穿起来了。下周一开始，纪检部会在校门口进行常规检查。',
+      replies: []
+    },
+    {
+      id: 2,
+      board: '树洞',
+      title: '深夜教学楼四楼，有人看见灯还亮着吗',
+      author: '匿名',
+      time: '10月24日 22:13',
+      visibility: 'public',
+      content: '今晚十点半经过旧教学楼，四楼最右边那间教室的灯还亮着。',
+      replies: []
+    },
+    
+    // --- 11月的新帖子（你用生成器做出来的直接粘在这下面） ---
+    {
+      id: 3,
+      board: '校园公告',
+      title: '【社联】“见字如面”冬日跨校信件交换活动正式开启！',
+      author: '学生会',
+      time: '11月10日 12:00',
+      visibility: 'public',
+      content: '在这个连聊天记录都可以一键清空的年代，你有多久没收到过一封手写的信了？',
+      replies: []
+    }
+  ];
+
+  window.onload = () => {
+    initForum(allPostsData);
+  };
+</script>
+</body>
+</html>
