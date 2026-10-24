@@ -144,13 +144,14 @@ function openProfile(authorName, e) {
       const isPublic = post.visibility === 'public';
       const item = document.createElement('div');
       
-      if (isPublic) {
+           if (isPublic) {
         item.className = 'post-item';
         item.onclick = () => openDetail(post.id, 'profile');
         item.innerHTML = `
           <div class="post-title-row">
             <div class="post-title">${post.title}</div>
-            <div class="post-tag">公开</div>
+            <!-- 加入了判断：如果是被删的就显示红标签 -->
+            ${post.isDeleted ? `<div class="post-tag tag-deleted">已删除</div>` : `<div class="post-tag">公开</div>`}
           </div>
           <div class="meta">
             <span>${post.time}</span>
